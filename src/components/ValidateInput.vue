@@ -2,14 +2,14 @@
   <div class="mb-3">
     <label for="exampleInputEmail1" class="form-label">Email address</label>
     <input
-      v-model="inputRef.val"
+      :value="inputRef.val"
+      @input="updateValue"
       @blur="validateInput"
-      type="email"
       class="form-control"
-      id="exampleInputEmail1"
-      aria-describedby="emailHelp"
+      :class="{'is-invalid': inputRef.error}"
+      v-bind="$attrs"
     >
-    <p class="form-text">{{ inputRef.message }}</p>
+    <p v-if="inputRef.error" class="invalid-feedback">{{ inputRef.message }}</p>
   </div>
 </template>
 
@@ -28,14 +28,24 @@ const emailReg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/
 
 export default defineComponent({
   props: {
-    rules: Array as PropType<RulsProp>
+    rules: Array as PropType<RulsProp>,
+    modelValue: String
   },
-  setup (props) {
+  // 禁止组件根元素继承 attribute
+  inheritAttrs: false,
+  setup (props, context) {
+    console.log(context.attrs)
     const inputRef = reactive({
-      val: '',
+      val: props.modelValue || '',
       error: false,
       message: ''
     })
+
+    const updateValue = (e: KeyboardEvent) => {
+      const targetValue = (e.target as HTMLInputElement).value
+      inputRef.val = targetValue
+      context.emit('update:modelValue', targetValue)
+    }
 
     const validateInput = () => {
       if (props.rules) {
@@ -64,13 +74,14 @@ export default defineComponent({
         })
 
         inputRef.error = !allPassed
-
-        if (allPassed) inputRef.message = ''
+        return allPassed
       }
+      return true
     }
 
     return {
       inputRef,
+      updateValue,
       validateInput
     }
   }
