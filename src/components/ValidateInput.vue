@@ -14,7 +14,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive } from 'vue'
+import { defineComponent, PropType, reactive, onMounted } from 'vue'
+import { emitter } from './ValidateForm.vue'
 
 // 单条规则类型
 interface RuleProp {
@@ -78,6 +79,10 @@ export default defineComponent({
       }
       return true
     }
+
+    onMounted(() => {
+      emitter.emit('form-item-created', validateInput)
+    })
 
     return {
       inputRef,

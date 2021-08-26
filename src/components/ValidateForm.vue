@@ -10,14 +10,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onUnmounted } from 'vue'
+import mitt from 'mitt'
+
+type ValidateFunc = () => boolean
+
+type Events = {
+  'form-item-created': ValidateFunc
+}
+export const emitter = mitt<Events>()
 
 export default defineComponent({
   emits: ['form-submit'],
   setup (props, context) {
+    const funcArr: ValidateFunc[] = []
+
     const submitFrom = () => {
-      context.emit('form-submit', true)
+      const result = funcArr.map(func => func()).every(result => result)
+      context.emit('form-submit', result)
     }
+
+    const callback = (func: ValidateFunc) => {
+      funcArr.push(func)
+    }
+
+    emitter.on('form-item-created', callback)
+    onUnmounted(() => {
+      emitter.off('form-item-created', callback)
+    })
 
     return {
       submitFrom

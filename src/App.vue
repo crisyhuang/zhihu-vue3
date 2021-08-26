@@ -4,7 +4,6 @@
 
     <validate-form @form-submit="onFormSubmit">
       <validate-input
-        ref="inputRef"
         v-model="emailVal"
         :rules="rulesProp"
         type="text"
@@ -46,24 +45,21 @@ export default defineComponent({
   },
   setup () {
     const emailVal = ref('')
-    const inputRef = ref<any>()
 
     const rulesProp = reactive<RulsProp>([
       { type: 'required', message: '电子邮箱地址不能为空' },
       { type: 'email', message: '请输入正确的电子邮箱格式' }
     ])
 
-    const onFormSubmit = (valid: boolean) => {
-      console.log('valid', valid)
-      console.log(inputRef.value.validateInput())
+    const onFormSubmit = (result: boolean) => {
+      console.log('result', result)
     }
 
     return {
       currentUser,
       rulesProp,
       emailVal,
-      onFormSubmit,
-      inputRef
+      onFormSubmit
     }
   }
 })
