@@ -14,7 +14,7 @@
           >
           <h5 class="card-title">{{ item.title }}</h5>
           <p class="card-text text-left">{{ item.description }}</p>
-          <a href="#" class="btn btn-primary">进入专栏</a>
+          <router-link :to="`/column/${item.id}`" class="btn btn-primary">进入专栏</router-link>
         </div>
       </div>
     </div>

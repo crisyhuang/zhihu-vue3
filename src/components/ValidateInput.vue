@@ -23,13 +23,13 @@ interface RuleProp {
   message: string;
 }
 // 导出规则数组，用于约束父组件对规则的定义
-export type RulsProp = RuleProp[]
+export type RulesProp = RuleProp[]
 
 const emailReg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/
 
 export default defineComponent({
   props: {
-    rules: Array as PropType<RulsProp>,
+    rules: Array as PropType<RulesProp>,
     modelValue: String
   },
   // 禁止组件根元素继承 attribute
