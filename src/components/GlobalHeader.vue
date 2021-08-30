@@ -16,7 +16,7 @@
     <!-- 已登录 -->
     <ul v-else class="list-inline mb-0">
       <li class="list-inline-item">
-        <dropdown :title="`你好 ${user.name}`"></dropdown>
+        <dropdown :title="`你好 ${user.nickName}`"></dropdown>
       </li>
     </ul>
   </nav>

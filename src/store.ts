@@ -5,8 +5,10 @@ import { testData, testPosts } from './testData'
 // 接口定义-用户
 export interface UserProps {
   isLogin: boolean;
-  name?: string;
-  id?: number;
+  nickName?: string;
+  _id?: number;
+  column?: string;
+  email?: string;
 }
 
 // 接口定义-图片
@@ -36,6 +38,7 @@ export interface PostProps {
 
 // 接口定义-全局data
 export interface GlobalDataProps {
+  token: string;
   loading: boolean;
   columns: ColumnProps[],
   posts: PostProps[],
@@ -48,8 +51,16 @@ const getAndCommit = async (url: string, mutationName: string, commit: Commit) =
   commit(mutationName, data)
 }
 
+// 抽象post请求和commit操作
+const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: any) => {
+  const { data } = await axios.post(url, payload)
+  commit(mutationName, data)
+  return data
+}
+
 const store = createStore<GlobalDataProps>({
   state: {
+    token: '',
     loading: false,
     columns: testData,
     posts: testPosts,
@@ -66,14 +77,19 @@ const store = createStore<GlobalDataProps>({
     }
   },
   mutations: {
-    login (state) {
-      state.user = { ...state.user, isLogin: true, name: 'hjj' }
-    },
     fetchColumns (state, rawData) {
       state.columns = rawData.data.list
     },
     setLoading (state, status) {
       state.loading = status
+    },
+    fetchCurrentUser (state, rawData) {
+      state.user = { isLogin: true, ...rawData.data }
+    },
+    login (state, rawData) {
+      const { token } = rawData.data
+      state.token = token
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
     }
   },
   actions: {
@@ -88,6 +104,18 @@ const store = createStore<GlobalDataProps>({
 
       // 优化2：将优化1的操作抽取成公共方法
       getAndCommit('/columns', 'fetchColumns', commit)
+    },
+    fetchCurrentUser ({ commit }) {
+      getAndCommit('/user/current', 'fetchCurrentUser', commit)
+    },
+    login ({ commit }, payload) {
+      return postAndCommit('/user/login', 'login', commit, payload)
+    },
+    // 整合登录操作+获取用户信息
+    loginAndFetch ({ dispatch }, loginData) {
+      return dispatch('login', loginData).then(() => {
+        return dispatch('fetchCurrentUser')
+      })
     }
   }
 })
