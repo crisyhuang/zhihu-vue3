@@ -36,9 +36,16 @@ export interface PostProps {
   columnId: number;
 }
 
+// 接口定义-错误消息
+export interface GlobalErrorProps {
+  status: boolean;
+  message?: string;
+}
+
 // 接口定义-全局data
 export interface GlobalDataProps {
   token: string;
+  error: GlobalErrorProps;
   loading: boolean;
   columns: ColumnProps[],
   posts: PostProps[],
@@ -61,6 +68,9 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
 const store = createStore<GlobalDataProps>({
   state: {
     token: localStorage.getItem('token') || '',
+    error: {
+      status: false
+    },
     loading: false,
     columns: testData,
     posts: testPosts,
@@ -82,6 +92,9 @@ const store = createStore<GlobalDataProps>({
     },
     setLoading (state, status) {
       state.loading = status
+    },
+    setError (state, e: GlobalErrorProps) {
+      state.error = e
     },
     fetchCurrentUser (state, rawData) {
       state.user = { isLogin: true, ...rawData.data }
