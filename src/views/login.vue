@@ -49,6 +49,8 @@ export default defineComponent({
     const passwordRules: RulesProp = [
       { type: 'required', message: '密码不能为空' }
     ]
+
+    // 111@test.com/111111
     const onFormSubmit = (result: boolean) => {
       if (result) {
         const payload = {
